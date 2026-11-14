@@ -1,42 +1,40 @@
-TURFBOOK — FULL UI PROTOTYPE + ANDROID BUILD WORKFLOW
+TURFBOOK — UPDATED PROJECT + ANDROID BUILD WORKFLOW
 
-WHAT'S INCLUDED
-- Premium black/gold responsive app interface.
-- Player browsing and booking request flow.
-- Owner ID/password login created by Admin.
-- Owner dashboard: booking list, approve/decline.
-- Admin dashboard: add/edit/delete turfs, create/edit owners, manage bookings.
-- Upload/change payment QR image and enter UPI ID.
-- Player booking lookup by phone, display uploaded QR after approval, submit transaction reference.
-- Admin can review submitted payment references and mark verified.
-- Commission setting, app display name, backup/restore.
-- Capacitor configuration and GitHub Actions workflow to build a DEBUG APK.
+INCLUDED
+- Full React/Vite + Capacitor project.
+- Premium black/gold TurfBook interface.
+- Player turf browsing and booking requests; no player registration.
+- Owner ID/password login and owner booking dashboard.
+- Admin dashboard to add/edit/delete turfs and owner accounts.
+- Separate hourly prices for 5s and 7s at every turf.
+- Exactly one turf can offer the additional Mini 7s format and its own price. The app blocks enabling Mini 7s on a second turf.
+- Booking requests save the selected format and price.
+- QR image upload, UPI/payment reference workflow, manual payment verification.
+- Commission and app-name settings, per-turf image uploads, app-icon upload/preview inside the app, and backup/restore.
+- Crown-free dark-green TurfBook Ksd. football artwork at resources/icon.png and icon.png; Android launcher icons are generated from this image during the build.
+- GitHub Actions workflow to build a DEBUG APK and generate Android launcher icons.
 
-IMPORTANT LIMITATIONS — READ BEFORE REAL USE
-This version is a local prototype. Data is saved in the browser/device local storage. It is NOT a secure multi-user backend:
-- Owners on different phones will not share the same live bookings.
-- Owner passwords and Admin PIN are local prototype credentials, not secure authentication.
-- QR image is stored locally on this device.
-- Payment verification is a manual prototype action; no money is processed.
-- Do not collect real customer payments or use real passwords with this prototype.
-A production release needs Supabase/server authentication, server-side Owner ID mapping, database row-level security, atomic slot locking, private QR/payment-proof storage, audit logs, verified payment handling and owner settlement records.
+IMPORTANT PRICING SETUP
+The six sample turf records are demonstration data. Their 5s and 7s price fields start with the same old sample price because the actual price list was not supplied. Before accepting bookings, open Admin > Manage Turfs > Edit for each turf and enter the real 5s and 7s rates. Tick “Also offer Mini 7s” only for the one turf that provides that option, then enter its separate price. The player booking form will show the enabled formats and the corresponding rate.
 
 FIRST-RUN ADMIN PIN
 246810
-Sign in using Admin from the top navigation, then change the PIN in Settings.
-This is a demo PIN, not secure for a public release.
+Change it from Admin > Settings. This is a local prototype PIN, not secure authentication.
 
 HOW TO PREVIEW
-1. Open the project in StackBlitz or another Vite environment.
+1. Open the TurfBook folder in StackBlitz or another Vite environment.
 2. Install dependencies if prompted.
 3. Run the preview.
 
-HOW TO GET A DEBUG APK
-The included GitHub Actions workflow builds an installable DEBUG APK after the project is pushed to a GitHub repository:
-1. Upload these project files to a new GitHub repository.
-2. Open the repository's Actions tab.
-3. Run "Build TurfBook Android APK" (or push to main).
-4. Download the "TurfBook-debug-apk" artifact from the completed workflow run.
-This is a DEBUG APK for testing, not a Play Store release build. Google Play requires a properly signed release AAB, privacy policy, Data safety declaration, testing and Play Console setup.
+HOW TO BUILD A DEBUG APK
+1. Upload the contents of this project folder to the ROOT of your GitHub repository (keep .github and resources folders).
+2. Open GitHub > Actions > Build TurfBook Android APK.
+3. Run the workflow or push to main.
+4. Download the TurfBook-debug-apk artifact from the completed run.
 
-Do not upload secrets or private payment keys into the source project.
+The workflow creates Android launcher icons from resources/icon.png. Rebuild and reinstall the APK to see a changed launcher icon on your device.
+
+CRITICAL LIMITATIONS — NOT READY FOR REAL CUSTOMER BOOKINGS OR PAYMENTS
+This remains a local-storage prototype. Data is stored in one browser/device; owners using other phones do not share live bookings. Owner passwords and Admin PIN are stored locally. QR/payment verification is manual. Slot checks are not protected by a server-side atomic lock. Do not use real customer data, real passwords, or collect real payments with this version.
+
+The requested natural-language AI Creator bar is technically possible, but requires an AI API and a secure backend with permission checks and confirmation before actions. It is not faked in this offline prototype. A production launch still requires a shared secure backend (e.g. Supabase), proper owner/admin authentication and access controls, server-side slot locking, secure payment-proof storage, audit logs, settlement records, privacy policy, and a signed Play Store AAB. The included workflow creates a DEBUG APK for testing, not a Play Store release.
