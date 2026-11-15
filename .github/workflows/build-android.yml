@@ -34,14 +34,14 @@ jobs:
         with:
           packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install icon generator
+        run: npm install --save-dev @capacitor/assets
 
       - name: Build web app
         run: npm run build
 
-      - name: Add Android platform
-        run: npx cap add android
+      - name: Generate Android icons
+        run: npx capacitor-assets generate --android
 
       - name: Sync Android project
         run: npx cap sync android
