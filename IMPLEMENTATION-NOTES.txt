@@ -1,0 +1,23 @@
+TURFBOOK FIREBASE INTEGRATION — WORKING SOURCE UPDATE
+
+What is now wired in this source tree:
+- Player booking requests call the createBooking Cloud Function. The server checks the turf, validates the format and price, and performs a transaction-based overlap check before creating the booking. This replaces the old client-only slot check when Firebase is configured.
+- Owner ID sign-in resolves the private derived email through ownerLogin, signs in with Firebase Authentication, and requires the ownerId custom claim.
+- Owner dashboard data is fetched through getOwnerDashboard; the client also subscribes to only that owner's bookings. Owner status changes call setBookingStatus.
+- Admin login uses Google Authentication and the bootstrapAdmin callable with a one-time bootstrap secret. The old local PIN is no longer used in the Firebase-enabled path.
+- Admin owner creation calls createOwner; passwords are created in Firebase Authentication and are not stored in Firestore.
+- Admin payment reference submission calls submitPaymentProof. Admin verification calls adminUpdateBooking; the backend transaction creates one idempotent ₹50 owner ledger credit.
+- Admin turf save and public settings save call adminSaveTurf and adminSaveSettings.
+- Backend notification trigger writes notification records and attempts owner push notifications when a device token has been registered.
+
+Still required before real use:
+1. Set the real Firebase WEB app config in .env (VITE_FIREBASE_API_KEY, AUTH_DOMAIN, PROJECT_ID, STORAGE_BUCKET, MESSAGING_SENDER_ID, APP_ID). Do not use the Android app ID as the web app ID.
+2. Configure and deploy the TURFBOOK_BOOTSTRAP_SECRET Firebase Functions secret. Use a long random secret, enter it once in the Admin sign-in screen, and do not share it.
+3. Deploy Firestore rules, indexes and Cloud Functions from an authenticated Firebase CLI session. Functions are in asia-south1.
+4. Add Firebase Storage handling for uploaded turf/QR/icon images; the current UI's data-URL uploads are not a production image-storage solution.
+5. Configure web push (VAPID key), request notification permission, register FCM tokens, and add a customer notification/booking lookup flow that does not expose customer details by phone number alone.
+6. Complete admin owner editing/deactivation, admin booking status controls, seed/migrate existing turf records, and test on multiple devices.
+7. Run dependency install, production build, emulator/security tests, live multi-device booking-race tests, payment idempotency tests, and notification tests.
+
+IMPORTANT
+This is an integration source update, not a production-ready deployment. It has not been deployed to the user's Firebase project and has not passed a production build or live tests. The original project ZIP is preserved separately. The current Android google-services.json is for the Android app and does not contain the Firebase Web app ID required by Vite.

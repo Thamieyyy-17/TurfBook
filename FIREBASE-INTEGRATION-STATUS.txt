@@ -1,0 +1,21 @@
+TURFBOOK — VERIFIED IMPLEMENTATION STATUS
+
+Project source preserved; the existing black TurfBook icon and UI are retained.
+
+ADDED IN THIS BUILD
+- Firebase Web SDK configuration through VITE_FIREBASE_* environment variables.
+- Firestore security rules: no client-side writes; private owner records are not readable by clients; owners can read only their own bookings; public active turf catalogue and public settings are readable.
+- Cloud Functions (Node 20) for admin bootstrap, owner creation/disable, owner ID-to-email mapping for Firebase Auth sign-in, booking creation with a Firestore transaction and overlap checks, owner approval/decline, admin payment status updates, turf management enforcing 5s + 7s and at most one Mini 7s turf, and admin settings.
+
+NOT YET A FINISHED/LIVE APP
+- Existing src/App.jsx still uses localStorage for its UI state and old prototype Owner ID/password and Admin PIN login. It has NOT yet been migrated to call these functions or subscribe to Firestore.
+- The app must not be used for real bookings or real owner passwords until that migration is complete.
+- Image/QR uploads need Firebase Storage integration; do not store large base64 images in Firestore documents.
+- Functions and rules have not been deployed to the user's Firebase project. Deployment requires the user's Firebase CLI session and may require enabling billing for Cloud Functions. Do not enable billing without the account holder/parent or guardian reviewing the plan and costs.
+- No APK was built or runtime-tested from this source in this environment.
+
+DEPLOYMENT SAFETY
+- Never make Firestore publicly writable.
+- Set the TURFBOOK_BOOTSTRAP_SECRET with Firebase Functions secrets before deploying.
+- Admin bootstrap must be performed using the intended admin Google account and a one-time secret. Do not share the secret in chat.
+- After deploying functions and rules, complete the frontend migration and test with two separate owner accounts before live use.

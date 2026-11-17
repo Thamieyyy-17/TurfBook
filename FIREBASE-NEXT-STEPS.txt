@@ -1,0 +1,14 @@
+TURFBOOK FIREBASE INTEGRATION STATUS
+
+Added:
+- Firebase JS SDK dependency
+- src/firebase.js initialising Firebase Auth and Firestore from Vite environment variables
+- .env.example template for the registered web app
+
+Not yet connected:
+- App.jsx still reads/writes localStorage. Do not treat this build as a shared/live booking app.
+- Owner ID/password login and Admin PIN are prototype-only and must not be used with real credentials.
+- Booking creation/approval must be moved behind trusted server-side code (Cloud Functions) using Firestore transactions to prevent double booking.
+- Firestore security rules must restrict owner access to their own turf/bookings and admin privileges must be server-controlled custom claims.
+
+Never make Firestore publicly writable to get around permission errors.

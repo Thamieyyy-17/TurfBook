@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
+    function isOwner(ownerId) { return signedIn() && request.auth.token.ownerId == ownerId; }
+
+    // Public catalogue only. All writes go through trusted callable functions.
+    match /turfs/{turfId} {
+      allow read: if resource.data.active == true || isAdmin() || (signedIn() && resource.data.ownerId == request.auth.token.ownerId);
+      allow write: if false;
+    }
+    match /bookings/{bookingId} {
+      allow read: if isAdmin() || (signedIn() && resource.data.ownerId == request.auth.token.ownerId);
+      allow write: if false;
+    }
+    match /settings/{settingId} {
+      allow read: if settingId == 'public';
+      allow write: if false;
+    }
+    match /owners/{ownerId} { allow read, write: if false; }
+    match /private/{docId} { allow read, write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}
