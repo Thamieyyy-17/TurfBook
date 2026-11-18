@@ -1,14 +1,12 @@
-TURFBOOK FIREBASE INTEGRATION STATUS
+TURFBOOK — OWNER ACTIONS REQUIRED
 
-Added:
-- Firebase JS SDK dependency
-- src/firebase.js initialising Firebase Auth and Firestore from Vite environment variables
-- .env.example template for the registered web app
+1. Do not enable billing unless a parent/guardian reviews the billing account, budget alerts and possible charges. Firebase Cloud Functions deployment requires Blaze.
+2. Set GitHub Actions secrets for the VITE_FIREBASE_* values listed in .env.example.
+3. Deploy Firestore rules/indexes, Cloud Functions and Hosting when the project billing/permissions allow it.
+4. Sign in with Google once, copy the UID from Firebase Authentication > Users, then create Firestore admins/<UID> with active=true (Boolean).
+5. In Admin, add/verify your actual turf records, owner assignments, 5s/7s prices, and the one Mini 7s turf with its separate price.
+6. Add the Android app SHA-1 fingerprint in Firebase Project Settings, keep Google sign-in enabled, download the refreshed google-services.json (it must include OAuth client entries), and replace the included file. Then build and test native Google sign-in on the actual Android app. The included native auth plugin is 6.x to match Capacitor 6 and is deprecated upstream; upgrade Capacitor and the plugin together before public production release.
+7. Run the debug APK on two separate devices and test: same-slot collision, owner isolation, customer booking access code, payment proof/verification, ₹50 credit exactly once, Notice Board sync, and notification sound/vibration.
+7. Before public release, finish security/privacy review, test payment process, and create a signed release AAB. The included workflow only creates a debug APK.
 
-Not yet connected:
-- App.jsx still reads/writes localStorage. Do not treat this build as a shared/live booking app.
-- Owner ID/password login and Admin PIN are prototype-only and must not be used with real credentials.
-- Booking creation/approval must be moved behind trusted server-side code (Cloud Functions) using Firestore transactions to prevent double booking.
-- Firestore security rules must restrict owner access to their own turf/bookings and admin privileges must be server-controlled custom claims.
-
-Never make Firestore publicly writable to get around permission errors.
+Never share private owner passwords, Firebase service-account keys, or any authentication tokens in chat.

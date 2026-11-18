@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1075698646026",
+    "project_id": "turfbook-966bc",
+    "storage_bucket": "turfbook-966bc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075698646026:android:4f0b8cac129116f38fb3f3",
+        "android_client_info": {
+          "package_name": "com.turfbook.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcRElU1dM4sK-TQm27WxKjY6-sSbC473E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

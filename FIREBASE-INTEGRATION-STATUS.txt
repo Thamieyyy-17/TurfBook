@@ -1,21 +1,36 @@
-TURFBOOK — VERIFIED IMPLEMENTATION STATUS
+TURFBOOK FIREBASE INTEGRATION STATUS
 
-Project source preserved; the existing black TurfBook icon and UI are retained.
+Project: turfbook-966bc
+Android package: com.turfbook.app
+Functions region: asia-south1
 
-ADDED IN THIS BUILD
-- Firebase Web SDK configuration through VITE_FIREBASE_* environment variables.
-- Firestore security rules: no client-side writes; private owner records are not readable by clients; owners can read only their own bookings; public active turf catalogue and public settings are readable.
-- Cloud Functions (Node 20) for admin bootstrap, owner creation/disable, owner ID-to-email mapping for Firebase Auth sign-in, booking creation with a Firestore transaction and overlap checks, owner approval/decline, admin payment status updates, turf management enforcing 5s + 7s and at most one Mini 7s turf, and admin settings.
+IMPLEMENTED IN SOURCE
+- Google admin sign-in with Firestore admins/<UID> allow-list validation. No bootstrapAdmin callable and no TURFBOOK_BOOTSTRAP_SECRET. Android uses the native Google picker plugin bridged into the Firebase JS Auth session; web uses Firebase Google popup.
+- Owner accounts created by trusted Cloud Functions, Firebase Auth owner custom claims, active-state checks, and per-owner dashboard data.
+- Guest bookings, random booking access code, exactly-10-digit phone validation, future-time validation, transaction-based hourly slot locks, and legacy overlap checks.
+- Payment proof submission after owner approval; admin verification; idempotent ₹50 owner ledger credit.
+- Public turf catalogue, admin turf management, required 5s/7s formats and one-Mini-7s limit.
+- Settings, QR/UPI, notice board, FCM tokens and Firestore-triggered notifications.
+- Firestore security rules and composite indexes.
+- Android Capacitor assets based on the supplied TURFBOOK KASARGOD icon, Firebase Messaging configuration and notification tone.
 
-NOT YET A FINISHED/LIVE APP
-- Existing src/App.jsx still uses localStorage for its UI state and old prototype Owner ID/password and Admin PIN login. It has NOT yet been migrated to call these functions or subscribe to Firestore.
-- The app must not be used for real bookings or real owner passwords until that migration is complete.
-- Image/QR uploads need Firebase Storage integration; do not store large base64 images in Firestore documents.
-- Functions and rules have not been deployed to the user's Firebase project. Deployment requires the user's Firebase CLI session and may require enabling billing for Cloud Functions. Do not enable billing without the account holder/parent or guardian reviewing the plan and costs.
-- No APK was built or runtime-tested from this source in this environment.
+NOT DEPLOYED / NOT VERIFIED
+- No Firebase deploy has been performed from this environment.
+- Cloud Functions require Blaze billing on the current Firebase pricing model. Check billing with a parent/guardian before enabling it.
+- Firestore rules/indexes, Functions, Hosting and Authentication settings must be checked in the actual Firebase project.
+- Native Android Google sign-in is implemented in source with the Capacitor Firebase Authentication 6.x plugin, but not runtime-verified. The included google-services.json has an empty OAuth client list; add the Android SHA-1 fingerprint in Firebase and replace it with the refreshed config before testing. Plugin 6.x is deprecated upstream; plan a Capacitor 8/plugin 8 upgrade before production.
+- The Android workflow creates a debug APK only; a signed Play Store AAB is not included.
+- npm dependency installation could not complete here because the package registry was unreachable, so the Vite/Gradle build is not locally verified.
 
-DEPLOYMENT SAFETY
-- Never make Firestore publicly writable.
-- Set the TURFBOOK_BOOTSTRAP_SECRET with Firebase Functions secrets before deploying.
-- Admin bootstrap must be performed using the intended admin Google account and a one-time secret. Do not share the secret in chat.
-- After deploying functions and rules, complete the frontend migration and test with two separate owner accounts before live use.
+SECURE ADMIN PROVISIONING
+1. Run the app's Google sign-in once with the intended admin Google account; the allow-list check will reject the account until it is registered.
+2. Copy the new user's UID from Firebase Authentication > Users.
+3. In Firestore create admins/<UID> with active (Boolean) = true.
+4. Sign in again. Client-side Firestore rules permit only reading one's own admin allow-list record; client writes are denied.
+
+CLOUD DEPLOYMENT
+firebase deploy --only firestore:rules,firestore:indexes,functions,hosting
+
+If the project stays on Spark, this may deploy Firestore rules/indexes and Hosting without Functions:
+firebase deploy --only firestore:rules,firestore:indexes,hosting
+In that case callable functions are still absent, and the cloud booking/admin/owner features are not operational end-to-end.

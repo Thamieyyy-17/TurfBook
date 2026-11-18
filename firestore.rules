@@ -2,23 +2,49 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
-    function isAdmin() { return signedIn() && request.auth.token.admin == true; }
-    function isOwner(ownerId) { return signedIn() && request.auth.token.ownerId == ownerId; }
+    function isAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+    function isOwner(ownerId) {
+      return signedIn()
+        && request.auth.token.ownerId == ownerId
+        && exists(/databases/$(database)/documents/owners/$(ownerId))
+        && get(/databases/$(database)/documents/owners/$(ownerId)).data.active == true
+        && get(/databases/$(database)/documents/owners/$(ownerId)).data.uid == request.auth.uid;
+    }
 
-    // Public catalogue only. All writes go through trusted callable functions.
+    // Admin allow-list records are provisioned manually by the trusted project owner in Firebase Console.
+    match /admins/{adminId} {
+      allow read: if signedIn() && request.auth.uid == adminId;
+      allow write: if false;
+    }
+
     match /turfs/{turfId} {
-      allow read: if resource.data.active == true || isAdmin() || (signedIn() && resource.data.ownerId == request.auth.token.ownerId);
+      allow read: if true; // Turf catalogue data contains no customer or credential records.
       allow write: if false;
     }
+
+    // Customer, owner and admin booking access is mediated by authenticated callable functions.
+    // This prevents clients from downloading raw access-code hashes or push tokens.
     match /bookings/{bookingId} {
-      allow read: if isAdmin() || (signedIn() && resource.data.ownerId == request.auth.token.ownerId);
-      allow write: if false;
+      allow read, write: if false;
     }
+
     match /settings/{settingId} {
       allow read: if settingId == 'public';
       allow write: if false;
     }
+
+    match /notifications/{notificationId} {
+      allow read: if signedIn() && resource.data.targetUid == request.auth.uid;
+      allow write: if false;
+    }
+
     match /owners/{ownerId} { allow read, write: if false; }
+    match /deviceTokens/{uid} { allow read, write: if false; }
+    match /slotLocks/{lockId} { allow read, write: if false; }
     match /private/{docId} { allow read, write: if false; }
     match /{document=**} { allow read, write: if false; }
   }
