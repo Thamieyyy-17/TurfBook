@@ -1,7 +1,7 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { Capacitor } from '@capacitor/core';
 import { FirebaseAuthentication } from '@capacitor-firebase/authentication';
-import { getAuth, initializeAuth, indexedDBLocalPersistence, GoogleAuthProvider, signInWithCredential, signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithCredential, signInWithPopup, signInWithEmailAndPassword, signOut } from 'firebase/auth';
 import { getFirestore, collection, doc, getDoc, onSnapshot } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging';
@@ -17,16 +17,9 @@ const firebaseConfig = {
 
 export const firebaseConfigured = ['apiKey', 'authDomain', 'projectId', 'appId'].every(key => Boolean(firebaseConfig[key]));
 export const app = firebaseConfigured ? (getApps().length ? getApp() : initializeApp(firebaseConfig)) : null;
-export const auth = app ? (() => {
-  if (!Capacitor.isNativePlatform()) return getAuth(app);
-  try {
-    return initializeAuth(app, { persistence: indexedDBLocalPersistence });
-  } catch (error) {
-    // Hot reload can initialize Auth before this module is re-evaluated.
-    if (error?.code === 'auth/already-initialized') return getAuth(app);
-    throw error;
-  }
-})() : null;
+// Let the Firebase SDK choose a supported persistence mechanism for the WebView/browser.
+// TurfBook application records are stored in Firestore.
+export const auth = app ? getAuth(app) : null;
 export const db = app ? getFirestore(app) : null;
 export const functions = app ? getFunctions(app, 'asia-south1') : null;
 let messagingInstance = null;
@@ -98,6 +91,6 @@ export async function signOutTurfBook() {
   if (auth) await signOut(auth);
 }
 
-export const watchTurfs = callback => onSnapshot(collection(db, 'turfs'), snapshot => callback(snapshot.docs.map(document => ({ id: document.id, ...document.data() }))));
-export const watchSettings = callback => onSnapshot(doc(db, 'settings', 'public'), snapshot => callback(snapshot.exists() ? snapshot.data() : {}));
+export const watchTurfs = (callback, onError) => onSnapshot(collection(db, 'turfs'), snapshot => callback(snapshot.docs.map(document => ({ id: document.id, ...document.data() }))), onError);
+export const watchSettings = (callback, onError) => onSnapshot(doc(db, 'settings', 'public'), snapshot => callback(snapshot.exists() ? snapshot.data() : {}), onError);
 export { signOut };

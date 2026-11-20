@@ -12,7 +12,7 @@ IMPLEMENTED IN SOURCE
 - Public turf catalogue, admin turf management, required 5s/7s formats and one-Mini-7s limit.
 - Settings, QR/UPI, notice board, FCM tokens and Firestore-triggered notifications.
 - Firestore security rules and composite indexes.
-- Android Capacitor assets based on the supplied TURFBOOK KASARGOD icon, Firebase Messaging configuration and notification tone.
+- Android Capacitor assets use the latest supplied TURF BOOK KASARGOD image (1024×1024) for the launcher icon, browser icon and icon-generator source; Firebase Messaging configuration and notification tone are included.
 
 NOT DEPLOYED / NOT VERIFIED
 - No Firebase deploy has been performed from this environment.
@@ -34,3 +34,12 @@ firebase deploy --only firestore:rules,firestore:indexes,functions,hosting
 If the project stays on Spark, this may deploy Firestore rules/indexes and Hosting without Functions:
 firebase deploy --only firestore:rules,firestore:indexes,hosting
 In that case callable functions are still absent, and the cloud booking/admin/owner features are not operational end-to-end.
+
+
+REVISION NOTES (2026-11-20)
+- Removed browser-side business-data persistence and the device-only booking path. The app no longer silently saves turfs, owners, bookings or settings only in device state when Firebase configuration is missing.
+- Cloud mutations now call the Firebase callable functions; the app displays a Firebase configuration warning instead of creating device-only booking records.
+- Changed Firebase JS Auth setup to the SDK's standard getAuth(app) initialization instead of forcing IndexedDB persistence.
+- Added Firestore listener error reporting and a React error boundary so render-time startup errors are displayed rather than disappearing silently.
+- The old Restore Backup control was removed because it only replaced React memory and did not restore Firestore data. Download Firebase Snapshot remains an export of the currently loaded admin dashboard.
+- Build and real-device startup must still be verified after the dependencies and Android build tools are installed. No Android crash log was available, so this source revision reduces identified startup risks but cannot prove the close-on-launch issue is resolved.

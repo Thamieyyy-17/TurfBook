@@ -6,7 +6,7 @@ THIS PROJECT
 - Firebase project: turfbook-966bc
 - Android package: com.turfbook.app
 - Firebase Functions region: asia-south1
-- Admin sign-in: Google Authentication plus an explicit Firestore allow-list record. No bootstrapAdmin function, setup secret, or local-storage admin PIN is used.
+- Admin sign-in: Google Authentication plus an explicit Firestore allow-list record. No bootstrapAdmin function or setup secret is used.
 
 CORE APP FEATURES IN SOURCE
 1. Players can request bookings without creating accounts. Each booking is retrieved using its booking ID and a random access code.
@@ -45,3 +45,9 @@ IMPORTANT LIMITATIONS
 - Customer notification delivery depends on permission, correct FCM configuration, and deployed functions. Ringtone/vibration behaviour varies by device and OS settings and must be tested on real devices.
 - App icon changes made here are baked into the next Android build. Admin-uploaded in-app branding does not silently replace the Android launcher icon on already-installed devices.
 - This is not a certified production release. Complete deployment, OAuth verification, test bookings across multiple devices, payment tests, notification tests, security review, and a signed release build before accepting real customer payments.
+
+
+LATEST SOURCE REVISION — 20 NOV 2026
+- The player/admin/owner business records are read from and written through Firebase Firestore/Cloud Functions. No browser-side business-data persistence or device-only booking mode is present. Form entries and open screens use temporary React state only until the user submits them.
+- The launcher/browser icon source is the supplied 1024×1024 TURF BOOK KASARGOD image in icon.png, public/icon.png, assets/icon.png and resources/icon.png. The Android GitHub workflow generates launcher sizes from assets/icon.png.
+- If the app still closes after the splash/logo, send the error shown by the new in-app startup error screen or provide an Android crash log. This archive has not been runtime-tested on the target tablet.
